@@ -24,7 +24,7 @@
         this.oscillator.frequency.value = freqValue ? freqValue : 440;
         this.gain.value = gainValue ? gainValue : 0;
     }
-
+    
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
         ext.oscillatorStop();
@@ -38,6 +38,9 @@
     };
 
     ext.oscillatorType = function (type) {
+        if (!osc) {
+            osc = new Oscillator();
+        }
         osc.oscillator.type = type;
     }
 
