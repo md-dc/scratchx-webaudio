@@ -27,7 +27,7 @@
 
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
-        osc.stop(0);
+        ext.oscillatorStop();
     };
 
 
@@ -52,7 +52,7 @@
         if (!osc) {
             return;
         }
-        osc.stop(0);
+        osc.oscillator.stop(0);
         osc = null;
     };
 
