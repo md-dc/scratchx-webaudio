@@ -77,9 +77,9 @@
             // Block type, block name, function name
             [' ', 'start oscillator', 'oscillatorStart'],
             [' ', 'stop oscillator', 'oscillatorStop'],
-            [' ', 'set oscillator type %m.waveType', 'oscillatorType'],
-            [' ', 'set oscillator frequency %n', 'oscillatorFrequency'],
-            [' ', 'set oscillator gain %n', 'oscillatorGain']
+            [' ', 'set oscillator type %m.waveType', 'oscillatorType', 'sine'],
+            [' ', 'set oscillator frequency %n', 'oscillatorFrequency', 440],
+            [' ', 'set oscillator gain %n', 'oscillatorGain', 0.5]
         ],
         menus: {
             waveType: ["sine", "square", "sawtooth", "triangle"]
