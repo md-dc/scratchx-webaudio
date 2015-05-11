@@ -56,7 +56,7 @@
     };
 
     ext.oscillatorGain = function (gainValue) {
-        getOscilator().gain.value = gainValue;
+        getOscilator().gain.gain.value = gainValue;
     };
 
     ext.oscillatorStart = function () {
