@@ -49,7 +49,15 @@
 
     ext.oscillatorType = function (type) {
         getOscilator().oscillator.type = type;
-    }
+    };
+
+    ext.oscillatorFrequency = function (freqValue) {
+        getOscilator().oscillator.frequency.value = freqValue;
+    };
+
+    ext.oscillatorGain = function (gainValue) {
+        getOscilator().gain.value = gainValue;
+    };
 
     ext.oscillatorStart = function () {
         getOscilator().oscillator.start(0);
@@ -69,11 +77,13 @@
             // Block type, block name, function name
             [' ', 'start oscillator', 'oscillatorStart'],
             [' ', 'stop oscillator', 'oscillatorStop'],
-            [' ', 'set oscillator type %m.waveType', 'oscillatorType']
+            [' ', 'set oscillator type %m.waveType', 'oscillatorType'],
+            [' ', 'set oscillator frequency %n', 'oscillatorFrequency'],
+            [' ', 'set oscillator gain %n', 'oscillatorGain']
         ],
         menus: {
             waveType: ["sine", "square", "sawtooth", "triangle"]
-        },
+        }
     };
 
     // Register the extension
