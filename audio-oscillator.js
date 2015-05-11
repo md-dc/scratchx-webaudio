@@ -13,14 +13,18 @@
         audioctx = new AudioContext();
     }
 
-    var osc = audioctx.createOscillator();
-    var gain = audioctx.createGain();
-    osc.connect(gain);
-    gain.connect(audioctx.destination);
-    osc.type = "sine";
-    osc.frequency.value = 440;
-    gain.gain.value = 0.5;
-    
+    var osc;
+
+    function Oscillator(waveType, freqValue, gainValue) {
+        this.oscillator = audioctx.createOscillator();
+        this.gain = audioctx.createGain();
+        this.oscillator.connect(this.gain);
+        this.gain.connect(audioctx.destination);
+        this.oscillator.type = waveType ? waveType : 'sine';
+        this.oscillator.frequency.value = freqValue ? freqValue : 440;
+        this.gain.value = gainValue ? gainValue : 0;
+    }
+
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
         osc.stop(0);
@@ -34,15 +38,22 @@
     };
 
     ext.oscillatorType = function (type) {
-        osc.type = type;
+        osc.oscillator.type = type;
     }
 
     ext.oscillatorStart = function () {
-        osc.start(0);
+        if (!osc) {
+            osc = new Oscillator();
+        }
+        osc.oscillator.start(0);
     };
-    
+
     ext.oscillatorStop = function () {
+        if (!osc) {
+            return;
+        }
         osc.stop(0);
+        osc = null;
     };
 
     // Block and block menu descriptions
