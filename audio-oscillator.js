@@ -13,8 +13,6 @@
         audioctx = new AudioContext();
     }
 
-    var osc;
-
     function Oscillator(waveType, freqValue, gainValue) {
         this.oscillator = audioctx.createOscillator();
         this.gain = audioctx.createGain();
@@ -24,7 +22,19 @@
         this.oscillator.frequency.value = freqValue ? freqValue : 440;
         this.gain.value = gainValue ? gainValue : 0;
     }
-    
+
+    var osc;
+
+    /**
+     * return oscillator can be start.
+     */
+    function getOscilator() {
+        if (!osc) {
+            osc = new Oscillator();
+        }
+        return osc;
+    }
+
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
         ext.oscillatorStop();
@@ -38,17 +48,11 @@
     };
 
     ext.oscillatorType = function (type) {
-        if (!osc) {
-            osc = new Oscillator();
-        }
-        osc.oscillator.type = type;
+        getOscilator().oscillator.type = type;
     }
 
     ext.oscillatorStart = function () {
-        if (!osc) {
-            osc = new Oscillator();
-        }
-        osc.oscillator.start(0);
+        getOscilator().oscillator.start(0);
     };
 
     ext.oscillatorStop = function () {
@@ -65,7 +69,11 @@
             // Block type, block name, function name
             [' ', 'start oscillator', 'oscillatorStart'],
             [' ', 'stop oscillator', 'oscillatorStop'],
-        ]
+            [' ', 'set oscillator type %m.waveType', 'oscillatorType']
+        ],
+        menus: {
+            waveType: ["sine", "square", "sawtooth", "triangle"]
+        },
     };
 
     // Register the extension
