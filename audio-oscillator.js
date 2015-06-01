@@ -18,9 +18,29 @@
         this.gain = audioctx.createGain();
         this.oscillator.connect(this.gain);
         this.gain.connect(audioctx.destination);
-        this.oscillator.type = waveType ? waveType : 'sine';
-        this.oscillator.frequency.value = freqValue ? freqValue : 440;
-        this.gain.value = gainValue ? gainValue : 0;
+        this.oscillator.type = waveType || 'sine';
+        this.oscillator.frequency.value = freqValue || 440;
+        this.gain.value = gainValue || 0.5;
+    }
+    
+    Oscillator.prototype.setFrequency = function (freqValue) {
+        this.oscillator.frequency.value = freqValue;
+        return this;
+    }
+
+    Oscillator.prototype.setGain = function (gainValue) {
+        this.oscillator.gain.gain.value = gainValue;
+        return this;
+    }
+
+    Oscillator.prototype.start = function () {
+        this.oscillator.oscillator.start();
+        return this;
+    }
+
+    Oscillator.prototype.stop = function () {
+        this.oscillator.oscillator.stop();
+        return this;
     }
 
     var osc;
@@ -52,22 +72,22 @@
     };
 
     ext.oscillatorFrequency = function (freqValue) {
-        getOscilator().oscillator.frequency.value = freqValue;
+        getOscilator().setFrequency(freqValue);
     };
 
     ext.oscillatorGain = function (gainValue) {
-        getOscilator().gain.gain.value = gainValue;
+        getOscilator().setGain(gainValue);
     };
 
     ext.oscillatorStart = function () {
-        getOscilator().oscillator.start(0);
+        getOscilator().start();
     };
 
     ext.oscillatorStop = function () {
         if (!osc) {
             return;
         }
-        osc.oscillator.stop(0);
+        osc.stop();
         osc = null;
     };
 
