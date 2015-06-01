@@ -22,7 +22,12 @@
         this.oscillator.frequency.value = freqValue || 440;
         this.gain.value = gainValue || 0.5;
     }
-    
+
+    Oscillator.prototype.setType = function (type) {
+        this.oscillator.type = type;
+        return this;
+    }
+
     Oscillator.prototype.setFrequency = function (freqValue) {
         this.oscillator.frequency.value = freqValue;
         return this;
@@ -68,7 +73,7 @@
     };
 
     ext.oscillatorType = function (type) {
-        getOscilator().oscillator.type = type;
+        getOscilator().setType(type);
     };
 
     ext.oscillatorFrequency = function (freqValue) {
