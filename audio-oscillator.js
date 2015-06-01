@@ -39,12 +39,12 @@
     }
 
     Oscillator.prototype.start = function () {
-        this.oscillator.oscillator.start();
+        this.oscillator.start();
         return this;
     }
 
     Oscillator.prototype.stop = function () {
-        this.oscillator.oscillator.stop();
+        this.oscillator.stop();
         return this;
     }
 
