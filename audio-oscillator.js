@@ -34,7 +34,7 @@
     }
 
     Oscillator.prototype.setGain = function (gainValue) {
-        this.oscillator.gain.gain.value = gainValue;
+        this.gain.gain.value = gainValue;
         return this;
     }
 
