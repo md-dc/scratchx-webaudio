@@ -15,41 +15,40 @@
 
     function Oscillator(waveType, freqValue, gainValue) {
         this.oscillator = audioctx.createOscillator();
-        this.gain = audioctx.createGain();
-        this.oscillator.connect(this.gain);
-        this.gain.connect(audioctx.destination);
+        this.gainNode = audioctx.createGain();
+        this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(audioctx.destination);
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
-        this.gain.value = gainValue || 0.5;
+        this.gainNode.value = gainValue || 0.5;
     }
 
     Oscillator.prototype.setType = function (type) {
         this.oscillator.type = type;
         return this;
-    }
+    };
 
     Oscillator.prototype.setFrequency = function (freqValue) {
         this.oscillator.frequency.value = freqValue;
         return this;
-    }
+    };
 
     Oscillator.prototype.setGain = function (gainValue) {
-        this.gain.gain.value = gainValue;
+        this.gainNode.gain.value = gainValue;
         return this;
-    }
+    };
 
     Oscillator.prototype.start = function () {
         this.oscillator.start();
         return this;
-    }
+    };
 
     Oscillator.prototype.stop = function () {
         this.oscillator.stop();
         return this;
-    }
+    };
 
     var osc;
-    var oscs;
 
     /**
      * return oscillator can be start.
