@@ -19,7 +19,9 @@
         this.oscillator.connect(this.gainNode);
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
-        this.gainNode.value = gainValue || 0.5;
+        this.gainValue = gainValue || 0.5;
+        this.gainNode.value = this.gainValue;
+        this.isPlaying = true;
     }
 
     Oscillator.prototype.getType = function () {
@@ -41,16 +43,19 @@
     };
 
     Oscillator.prototype.getGain = function () {
-        return this.gainNode.gain.value;
+        return this.gainValue;
     };
 
     Oscillator.prototype.setGain = function (gainValue) {
-        this.gainNode.gain.value = gainValue;
+        this.gainValue = gainValue;
+        if (this.isPlaying) {
+            this.gainNode.gain.value = gainValue;
+        }
         return this;
     };
 
     Oscillator.prototype.isConnected = function () {
-        return this.gainNode.numberOfOutputs() != 0;
+        return (this.gainNode.numberOfOutputs() > 0);
     };
 
     Oscillator.prototype.connect = function () {
@@ -73,12 +78,23 @@
         return this;
     };
 
+    Oscillator.prototype.mute = function () {
+        if (!this.isPlaying) return;
+        this.setGain(0);
+        this.isPlaying = false;
+        return this;
+    };
+
+    Oscillator.prototype.play = function () {
+        this.setGain(this.gainValue);
+        this.isPlaying = true;
+        return this;
+    };
+
+
     // initialize oscillators
     var oscs = {};
     var oscNames = ["1", "2", "3", "4"];
-    // for (let name of oscNames) {
-    //     oscs[name] = new Oscillator();
-    // }
 
     /**
      * return oscillator can be start.
@@ -131,6 +147,24 @@
         getOscillator(oscName).setGain(gainValue);
     };
 
+    ext.playOscillator = function (oscName) {
+        getOscillator(oscName).play();
+    };
+
+    ext.muteOscillator = function (oscName) {
+        getOscillator(oscName).mute();
+    };
+
+    ext.oscillatorIsPlaying = function (oscName) {
+        return getOscillator(oscName).isPlaying;
+    };
+
+    ext.muteAllOscillators = function () {
+        for (let name of oscNames) {
+            ext.muteOscillator(name);
+        }
+    };
+
     ext.connectOscillator = function (oscName) {
         getOscillator(oscName).connect();
     };
@@ -155,16 +189,16 @@
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            ['r', 'oscillator %m.oscName is connected', 'oscillatorIsConnected', oscNames[0]],
-            [' ', 'connect oscillator %m.oscName', 'connectOscillator', oscNames[0]],
-            [' ', 'disconnect oscillator %m.oscName', 'disconnectOscillator', oscNames[0]],
+            ['r', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
+            [' ', 'play oscillator %m.oscName', 'playOscillator', oscNames[0]],
+            [' ', 'mute oscillator %m.oscName', 'muteOscillator', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
             [' ', 'set oscillator %m.oscName type %m.waveType', 'setOscillatorType', oscNames[0], 'sine'],
             ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
             ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
-            [' ', 'disconnect all oscillators', 'disconnectAllOscillators']
+            [' ', 'mute all oscillators', 'muteAllOscillators']
         ],
         menus: {
             oscName: oscNames,
