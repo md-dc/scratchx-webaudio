@@ -23,14 +23,26 @@
         this.gainNode.value = gainValue || 0.5;
     }
 
+    Oscillator.prototype.getType = function () {
+        return this.oscillator.type;
+    };
+
     Oscillator.prototype.setType = function (type) {
         this.oscillator.type = type;
         return this;
     };
 
+    Oscillator.prototype.getFrequency = function () {
+        return this.oscillator.frequency.value;
+    };
+
     Oscillator.prototype.setFrequency = function (freqValue) {
         this.oscillator.frequency.value = freqValue;
         return this;
+    };
+
+    Oscillator.prototype.getGain = function () {
+        return this.gainNode.gain.value;
     };
 
     Oscillator.prototype.setGain = function (gainValue) {
@@ -48,21 +60,29 @@
         return this;
     };
 
-    var osc;
+    // initialize oscillators
+    var oscs = {};
+    var oscNames = ["1", "2", "3", "4"];
+    // for (let name of oscNames) {
+    //     oscs[name] = new Oscillator();
+    // }
 
     /**
      * return oscillator can be start.
      */
-    function getOscillator() {
-        if (!osc) {
-            osc = new Oscillator();
+    function getOscillator(oscName) {
+        let name = oscName || oscNames[0];
+        if (!oscs[oscName]) {
+            oscs[oscName] = new Oscillator();
         }
-        return osc;
+        return oscs[oscName];
     }
 
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
-        ext.oscillatorStop();
+        for (let name of oscNames) {
+            ext.stopAllOscillators(name);
+        }
     };
 
 
@@ -72,42 +92,63 @@
         return {status: 2, msg: 'Ready'};
     };
 
-    ext.oscillatorType = function (type) {
-        getOscillator().setType(type);
+    ext.getOscillatorType = function (oscName) {
+        return getOscillator(oscName).getType();
     };
 
-    ext.oscillatorFrequency = function (freqValue) {
-        getOscillator().setFrequency(freqValue);
+    ext.setOscillatorType = function (oscName, type) {
+        getOscillator(oscName).setType(type);
     };
 
-    ext.oscillatorGain = function (gainValue) {
-        getOscillator().setGain(gainValue);
+    ext.getOscillatorFrequency = function (oscName) {
+        return getOscillator(oscName).getFrequency();
     };
 
-    ext.oscillatorStart = function () {
-        getOscillator().start();
+    ext.setOscillatorFrequency = function (oscName, freqValue) {
+        getOscillator(oscName).setFrequency(freqValue);
     };
 
-    ext.oscillatorStop = function () {
-        if (!osc) {
-            return;
+    ext.getOscillatorGain = function (oscName) {
+        return getOscillator(oscName).getGain();
+    };
+
+    ext.setOscillatorGain = function (oscName, gainValue) {
+        getOscillator(oscName).setGain(gainValue);
+    };
+
+    ext.startOscillator = function (oscName) {
+        getOscillator(oscName).start();
+    };
+
+    ext.stopOscillator = function (oscName) {
+        if (!oscs[oscName]) return;
+        oscs[oscName].stop();
+        oscs[oscName] = null;
+    };
+
+    ext.stopAllOscillators = function () {
+        for (let name of oscNames) {
+            ext.stopOscillator(name);
         }
-        osc.stop();
-        osc = null;
     };
 
     // Block and block menu descriptions
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            [' ', 'start oscillator', 'oscillatorStart'],
-            [' ', 'stop oscillator', 'oscillatorStop'],
-            [' ', 'set oscillator type %m.waveType', 'oscillatorType', 'sine'],
-            [' ', 'set oscillator frequency %n', 'oscillatorFrequency', 440],
-            [' ', 'set oscillator gain %n', 'oscillatorGain', 0.5]
+            [' ', 'start oscillator %m.oscName', 'startOscillator', oscNames[0]],
+            [' ', 'stop oscillator %m.oscName', 'stopOscillator', oscNames[0]],
+            ['r', 'oscillator %.oscName type', 'getOscillatorType', oscNames[0]],
+            [' ', 'set oscillator %m.oscName type %m.waveType', 'setOscillatorType', oscNames[0], 'sine'],
+            ['r', 'oscillator %.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
+            [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
+            ['r', 'oscillator %.oscName gain', 'getOscillatorGain', oscNames[0]],
+            [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
+            [' ', 'stop all oscillator', 'stopAllOscillators']
         ],
         menus: {
-            waveType: ["sine", "square", "sawtooth", "triangle"]
+            oscName: oscNames,
+            waveType: ['sine', 'square', 'sawtooth', 'triangle']
         }
     };
 
