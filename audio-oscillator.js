@@ -188,7 +188,7 @@
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            ['r', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
+            ['h', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
             [' ', 'play oscillator %m.oscName', 'playOscillator', oscNames[0]],
             [' ', 'mute oscillator %m.oscName', 'muteOscillator', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
