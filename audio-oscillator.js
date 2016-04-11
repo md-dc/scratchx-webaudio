@@ -21,7 +21,7 @@
         this.oscillator.frequency.value = freqValue || 440;
         this.gainValue = gainValue || 0.5;
         this.gainNode.value = this.gainValue;
-        this.isPlaying = true;
+        this.isPlaying = false;
     }
 
     Oscillator.prototype.getType = function () {
@@ -86,8 +86,8 @@
     };
 
     Oscillator.prototype.play = function () {
-        this.setGain(this.gainValue);
         this.isPlaying = true;
+        this.setGain(this.gainValue);
         return this;
     };
 
