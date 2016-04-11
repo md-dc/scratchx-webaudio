@@ -19,9 +19,8 @@
         this.oscillator.connect(this.gainNode);
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
-        this.gainValue = gainValue || 0.5;
-        this.gainNode.value = this.gainValue;
-        this.isPlaying = false;
+        this.gainValue = gainValue || 1.0;
+        this.mute();
     }
 
     Oscillator.prototype.getType = function () {
@@ -79,7 +78,6 @@
     };
 
     Oscillator.prototype.mute = function () {
-        if (!this.isPlaying) return;
         this.gainNode.gain.value = 0;
         this.isPlaying = false;
         return this;
