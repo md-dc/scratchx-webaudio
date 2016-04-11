@@ -103,6 +103,7 @@
         let name = oscName || oscNames[0];
         if (!oscs[oscName]) {
             oscs[oscName] = new Oscillator();
+            oscs[oscName].connect();
             oscs[oscName].start();
         }
         return oscs[oscName];
