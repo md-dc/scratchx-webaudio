@@ -49,11 +49,12 @@
     }
 
     var osc;
+    var oscs;
 
     /**
      * return oscillator can be start.
      */
-    function getOscilator() {
+    function getOscillator() {
         if (!osc) {
             osc = new Oscillator();
         }
@@ -73,19 +74,19 @@
     };
 
     ext.oscillatorType = function (type) {
-        getOscilator().setType(type);
+        getOscillator().setType(type);
     };
 
     ext.oscillatorFrequency = function (freqValue) {
-        getOscilator().setFrequency(freqValue);
+        getOscillator().setFrequency(freqValue);
     };
 
     ext.oscillatorGain = function (gainValue) {
-        getOscilator().setGain(gainValue);
+        getOscillator().setGain(gainValue);
     };
 
     ext.oscillatorStart = function () {
-        getOscilator().start();
+        getOscillator().start();
     };
 
     ext.oscillatorStop = function () {
