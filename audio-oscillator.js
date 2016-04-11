@@ -80,14 +80,14 @@
 
     Oscillator.prototype.mute = function () {
         if (!this.isPlaying) return;
-        this.setGain(0);
+        this.gainNode.gain.value = 0;
         this.isPlaying = false;
         return this;
     };
 
     Oscillator.prototype.play = function () {
         this.isPlaying = true;
-        this.setGain(this.gainValue);
+        this.gainNode.gain.value = this.gainValue;
         return this;
     };
 
