@@ -138,11 +138,11 @@
             // Block type, block name, function name
             [' ', 'start oscillator %m.oscName', 'startOscillator', oscNames[0]],
             [' ', 'stop oscillator %m.oscName', 'stopOscillator', oscNames[0]],
-            ['r', 'oscillator %.oscName type', 'getOscillatorType', oscNames[0]],
+            ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
             [' ', 'set oscillator %m.oscName type %m.waveType', 'setOscillatorType', oscNames[0], 'sine'],
-            ['r', 'oscillator %.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
+            ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
-            ['r', 'oscillator %.oscName gain', 'getOscillatorGain', oscNames[0]],
+            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
             [' ', 'stop all oscillator', 'stopAllOscillators']
         ],
