@@ -17,7 +17,6 @@
         this.oscillator = audioctx.createOscillator();
         this.gainNode = audioctx.createGain();
         this.oscillator.connect(this.gainNode);
-        this.gainNode.connect(audioctx.destination);
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
         this.gainNode.value = gainValue || 0.5;
@@ -50,6 +49,20 @@
         return this;
     };
 
+    Oscillator.prototype.isConnected = function () {
+        return this.gainNode.numberOfOutputs() != 0;
+    };
+
+    Oscillator.prototype.connect = function () {
+        this.gainNode.connect(audioctx.destination);
+        return this;
+    };
+
+    Oscillator.prototype.disconnect = function () {
+        this.gainNode.disconnect(audioctx.destination);
+        return this;
+    };
+
     Oscillator.prototype.start = function () {
         this.oscillator.start();
         return this;
@@ -74,6 +87,7 @@
         let name = oscName || oscNames[0];
         if (!oscs[oscName]) {
             oscs[oscName] = new Oscillator();
+            oscs[oscName].start();
         }
         return oscs[oscName];
     }
@@ -81,7 +95,8 @@
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
         for (let name of oscNames) {
-            ext.stopAllOscillators(name);
+            oscs[name].stop();
+            oscs[name] = null;
         }
     };
 
@@ -116,19 +131,23 @@
         getOscillator(oscName).setGain(gainValue);
     };
 
-    ext.startOscillator = function (oscName) {
-        getOscillator(oscName).start();
+    ext.connectOscillator = function (oscName) {
+        getOscillator(oscName).connect();
     };
 
-    ext.stopOscillator = function (oscName) {
+    ext.disconnectOscillator = function (oscName) {
         if (!oscs[oscName]) return;
-        oscs[oscName].stop();
-        oscs[oscName] = null;
+        oscs[oscName].disconnect();
     };
 
-    ext.stopAllOscillators = function () {
+    ext.oscillatorIsConnected = function (oscName) {
+        if (!oscs[oscName]) return false;
+        return oscs[oscName].isConnected();
+    };
+
+    ext.disconnectAllOscillators = function () {
         for (let name of oscNames) {
-            ext.stopOscillator(name);
+            ext.disconnectOscillator(name);
         }
     };
 
@@ -136,15 +155,16 @@
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            [' ', 'start oscillator %m.oscName', 'startOscillator', oscNames[0]],
-            [' ', 'stop oscillator %m.oscName', 'stopOscillator', oscNames[0]],
+            ['r', 'oscillator %m.oscName is connected', 'oscillatorIsConnected', oscNames[0]],
+            [' ', 'connect oscillator %m.oscName', 'connectOscillator', oscNames[0]],
+            [' ', 'disconnect oscillator %m.oscName', 'disconnectOscillator', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
             [' ', 'set oscillator %m.oscName type %m.waveType', 'setOscillatorType', oscNames[0], 'sine'],
             ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
             ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
-            [' ', 'stop all oscillator', 'stopAllOscillators']
+            [' ', 'disconnect all oscillators', 'disconnectAllOscillators']
         ],
         menus: {
             oscName: oscNames,
