@@ -119,7 +119,11 @@
     // Status reporting code
     // Use this to report missing hardware, plugin or unsupported browser
     ext._getStatus = function () {
-        return {status: 2, msg: 'Ready'};
+        if (audioctx) {
+            return {status: 2, msg: 'Ready'};
+        } else {
+            return {status: 0, msg: 'No Audio Context'};
+        }
     };
 
     ext.getOscillatorType = function (oscName) {
