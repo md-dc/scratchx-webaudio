@@ -92,7 +92,7 @@
 
     // initialize oscillators
     var oscs = {};
-    var oscNames = ["1", "2", "3", "4"];
+    var oscNames = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
     /**
      * return oscillator can be start.
