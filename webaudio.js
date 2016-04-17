@@ -108,9 +108,9 @@
 
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
-        for (let name of oscNames) {
-            oscs[name].stop();
-            oscs[name] = null;
+        for (var i = 0; i < oscNames.length; i++) {
+            oscs[oscNames[i]].stop();
+            oscs[oscNames[i]] = null;
         }
     };
 
@@ -154,16 +154,24 @@
     };
 
     ext.muteOscillator = function (oscName) {
-        getOscillator(oscName).mute();
+        var targetOsc = oscs[oscName];
+        if (targetOsc) {
+            targetOsc.mute();
+        }
     };
 
     ext.oscillatorIsPlaying = function (oscName) {
-        return getOscillator(oscName).isPlaying;
+        var targetOsc = oscs[oscName];
+        if (targetOsc) {
+            return targetOsc.isPlaying;
+        } else {
+            return false;
+        }
     };
 
     ext.muteAllOscillators = function () {
-        for (let name of oscNames) {
-            ext.muteOscillator(name);
+        for (var i = 0; i < oscNames.length; i++) {
+            ext.muteOscillator(oscNames[i]);
         }
     };
 
