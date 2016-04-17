@@ -174,13 +174,13 @@
             [' ', 'play oscillator %m.oscName', 'playOscillator', oscNames[0]],
             [' ', 'mute oscillator %m.oscName', 'muteOscillator', oscNames[0]],
             ['b', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
-            [' ', 'mute all oscillators', 'muteAllOscillators']
+            [' ', 'mute all oscillators', 'muteAllOscillators'],
             [' ', 'set oscillator %m.oscName type %m.oscType', 'setOscillatorType', oscNames[0], 'sine'],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
             ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
-            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
+            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]]
         ],
         menus: {
             oscName: oscNames,
