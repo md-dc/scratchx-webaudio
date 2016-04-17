@@ -193,7 +193,8 @@
         menus: {
             oscName: oscNames,
             oscType: ['sine', 'square', 'sawtooth', 'triangle']
-        }
+        },
+        url: 'http://yokobond.github.io/scratchx-webaudio/'
     };
 
     // Register the extension
