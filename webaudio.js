@@ -98,7 +98,6 @@
      * return oscillator can be start.
      */
     function getOscillator(oscName) {
-        let name = oscName || oscNames[0];
         if (!oscs[oscName]) {
             oscs[oscName] = new Oscillator();
             oscs[oscName].connect();
@@ -168,44 +167,24 @@
         }
     };
 
-    ext.connectOscillator = function (oscName) {
-        getOscillator(oscName).connect();
-    };
-
-    ext.disconnectOscillator = function (oscName) {
-        if (!oscs[oscName]) return;
-        oscs[oscName].disconnect();
-    };
-
-    ext.oscillatorIsConnected = function (oscName) {
-        if (!oscs[oscName]) return false;
-        return oscs[oscName].isConnected();
-    };
-
-    ext.disconnectAllOscillators = function () {
-        for (let name of oscNames) {
-            ext.disconnectOscillator(name);
-        }
-    };
-
     // Block and block menu descriptions
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            ['b', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
             [' ', 'play oscillator %m.oscName', 'playOscillator', oscNames[0]],
             [' ', 'mute oscillator %m.oscName', 'muteOscillator', oscNames[0]],
-            ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
-            [' ', 'set oscillator %m.oscName type %m.waveType', 'setOscillatorType', oscNames[0], 'sine'],
-            ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
-            [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
-            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
-            [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
+            ['b', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
             [' ', 'mute all oscillators', 'muteAllOscillators']
+            [' ', 'set oscillator %m.oscName type %m.oscType', 'setOscillatorType', oscNames[0], 'sine'],
+            [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
+            [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
+            ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
+            ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
+            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
         ],
         menus: {
             oscName: oscNames,
-            waveType: ['sine', 'square', 'sawtooth', 'triangle']
+            oscType: ['sine', 'square', 'sawtooth', 'triangle']
         }
     };
 
