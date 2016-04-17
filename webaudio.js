@@ -1,5 +1,5 @@
 /* 
- * ScratchX extension for WebAudio Oscillator
+ * ScratchX extension for WebAudio
  * 
  * yokobond <koji.yokokawa@yengawa.com>
  */
@@ -210,6 +210,6 @@
     };
 
     // Register the extension
-    ScratchExtensions.register('WebAudio Oscillator', descriptor, ext);
+    ScratchExtensions.register('WebAudio', descriptor, ext);
 })({});
 
