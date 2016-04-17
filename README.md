@@ -1,4 +1,4 @@
-# scratchx-audio
+# scratchx-webaudio
 ScratchX extension for WebAudio API
 
 ---
