@@ -15,8 +15,21 @@
 
     function Oscillator(waveType, freqValue, gainValue) {
         this.oscillator = audioctx.createOscillator();
+        this.delayNode = audioctx.createDelay();
+        this.delayNode.delayTime.value = 0.5;
+        this.feedbackNode = audioctx.createGain();
+        this.feedbackNode.gain.value = 0.8;
+        this.cutoffNode = audioctx.createBiquadFilter();
+        this.cutoffNode.frequency.value = 1000;
         this.gainNode = audioctx.createGain();
+
+        this.oscillator.connect(this.delayNode);
+        this.delayNode.connect(this.feedbackNode);
+        this.feedbackNode.connect(this.cutoffNode);
+        this.cutoffNode.connect(this.delayNode);
         this.oscillator.connect(this.gainNode);
+        this.delayNode.connect(this.gainNode);
+
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
         this.gainValue = gainValue || 1.0;
@@ -50,6 +63,33 @@
         if (this.isPlaying) {
             this.gainNode.gain.value = gainValue;
         }
+        return this;
+    };
+
+    Oscillator.prototype.getDelay = function () {
+        return this.oscillator.delayNode.delayTime.value;
+    };
+
+    Oscillator.prototype.setDelay = function (delayValue) {
+        this.oscillator.delayNode.delayTime.value = delayValue;
+        return this;
+    };
+
+    Oscillator.prototype.getFeedback = function () {
+        return this.oscillator.feedbackNode.gain.value;
+    };
+
+    Oscillator.prototype.setFeedback = function (feedbackValue) {
+        this.oscillator.feedbackNode.gain.value = feedbackValue;
+        return this;
+    };
+
+    Oscillator.prototype.getCutoff = function () {
+        return this.oscillator.cutoffNode.frequency.value;
+    };
+
+    Oscillator.prototype.setCutoff = function (cutoffValue) {
+        this.oscillator.cutoffNode.frequency.value = cutoffValue;
         return this;
     };
 
@@ -149,6 +189,30 @@
         getOscillator(oscName).setGain(gainValue);
     };
 
+    ext.getOscillatorDelay = function (oscName) {
+        return getOscillator(oscName).getDelay();
+    };
+
+    ext.setOscillatorDelay = function (oscName, value) {
+        getOscillator(oscName).setDelay(value);
+    };
+
+    ext.getOscillatorFeedback = function (oscName) {
+        return getOscillator(oscName).getFeedback();
+    };
+
+    ext.setOscillatorFeedback = function (oscName, value) {
+        getOscillator(oscName).setFeedback(value);
+    };
+
+    ext.getOscillatorCutoff = function (oscName) {
+        return getOscillator(oscName).getCutoff();
+    };
+
+    ext.setOscillatorCutoff = function (oscName, value) {
+        getOscillator(oscName).setCutoff(value);
+    };
+
     ext.playOscillator = function (oscName) {
         getOscillator(oscName).play();
     };
@@ -186,9 +250,15 @@
             [' ', 'set oscillator %m.oscName type %m.oscType', 'setOscillatorType', oscNames[0], 'sine'],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
+            [' ', 'set oscillator %m.oscName delay %n', 'setOscillatorDelay', oscNames[0], 0.5],
+            [' ', 'set oscillator %m.oscName feedback %n', 'setOscillatorFeedback', oscNames[0], 0.5],
+            [' ', 'set oscillator %m.oscName cutoff %n', 'setOscillatorCutoff', oscNames[0], 0.5],
             ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
-            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]]
+            ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
+            ['r', 'oscillator %m.oscName delay', 'getOscillatorGain', oscNames[0]],
+            ['r', 'oscillator %m.oscName feedback', 'getOscillatorGain', oscNames[0]],
+            ['r', 'oscillator %m.oscName cutoff', 'getOscillatorGain', oscNames[0]]
         ],
         menus: {
             oscName: oscNames,
