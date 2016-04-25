@@ -16,24 +16,25 @@
     function Oscillator(waveType, freqValue, gainValue) {
         this.oscillator = audioctx.createOscillator();
         this.delayNode = audioctx.createDelay();
-        this.delayNode.delayTime.value = 0.5;
+        this.delayNode.delayTime.value = 0.0;
         this.feedbackNode = audioctx.createGain();
-        this.feedbackNode.gain.value = 0.8;
+        this.feedbackNode.gain.value = 0.0;
         this.cutoffNode = audioctx.createBiquadFilter();
-        this.cutoffNode.frequency.value = 1000;
+        this.cutoffNode.frequency.value = 2000;
         this.gainNode = audioctx.createGain();
 
-        this.oscillator.connect(this.delayNode);
+        this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(this.delayNode);
         this.delayNode.connect(this.feedbackNode);
         this.feedbackNode.connect(this.cutoffNode);
         this.cutoffNode.connect(this.delayNode);
-        this.oscillator.connect(this.gainNode);
-        this.delayNode.connect(this.gainNode);
+        // this.delayNode.connect(this.gainNode);
+        // this.oscillator.connect(this.gainNode);
 
         this.oscillator.type = waveType || 'sine';
         this.oscillator.frequency.value = freqValue || 440;
         this.gainValue = gainValue || 1.0;
-        this.mute();
+        this.off();
     }
 
     Oscillator.prototype.getType = function () {
@@ -60,36 +61,36 @@
 
     Oscillator.prototype.setGain = function (gainValue) {
         this.gainValue = gainValue;
-        if (this.isPlaying) {
+        if (this.isOn) {
             this.gainNode.gain.value = gainValue;
         }
         return this;
     };
 
     Oscillator.prototype.getDelay = function () {
-        return this.oscillator.delayNode.delayTime.value;
+        return this.delayNode.delayTime.value;
     };
 
     Oscillator.prototype.setDelay = function (delayValue) {
-        this.oscillator.delayNode.delayTime.value = delayValue;
+        this.delayNode.delayTime.value = delayValue;
         return this;
     };
 
     Oscillator.prototype.getFeedback = function () {
-        return this.oscillator.feedbackNode.gain.value;
+        return this.feedbackNode.gain.value;
     };
 
     Oscillator.prototype.setFeedback = function (feedbackValue) {
-        this.oscillator.feedbackNode.gain.value = feedbackValue;
+        this.feedbackNode.gain.value = feedbackValue;
         return this;
     };
 
     Oscillator.prototype.getCutoff = function () {
-        return this.oscillator.cutoffNode.frequency.value;
+        return this.cutoffNode.frequency.value;
     };
 
     Oscillator.prototype.setCutoff = function (cutoffValue) {
-        this.oscillator.cutoffNode.frequency.value = cutoffValue;
+        this.cutoffNode.frequency.value = cutoffValue;
         return this;
     };
 
@@ -98,12 +99,14 @@
     };
 
     Oscillator.prototype.connect = function () {
-        this.gainNode.connect(audioctx.destination);
+        // this.gainNode.connect(audioctx.destination);
+        this.delayNode.connect(audioctx.destination);
         return this;
     };
 
     Oscillator.prototype.disconnect = function () {
-        this.gainNode.disconnect(audioctx.destination);
+        // this.gainNode.disconnect(audioctx.destination);
+        this.delayNode.disconnect(audioctx.destination);
         return this;
     };
 
@@ -113,18 +116,20 @@
     };
 
     Oscillator.prototype.stop = function () {
+        this.gainNode.gain.value = 0;
+        this.isOn = false;
         this.oscillator.stop();
         return this;
     };
 
-    Oscillator.prototype.mute = function () {
+    Oscillator.prototype.off = function () {
         this.gainNode.gain.value = 0;
-        this.isPlaying = false;
+        this.isOn = false;
         return this;
     };
 
-    Oscillator.prototype.play = function () {
-        this.isPlaying = true;
+    Oscillator.prototype.on = function () {
+        this.isOn = true;
         this.gainNode.gain.value = this.gainValue;
         return this;
     };
@@ -145,6 +150,30 @@
         }
         return oscs[oscName];
     }
+
+    ext.startOscillator = function (oscName) {
+        if (!oscs[oscName]) {
+            oscs[oscName] = new Oscillator();
+            oscs[oscName].connect();
+        }
+        oscs[oscName].start();
+    }
+
+    ext.disconnectOscillator = function (oscName) {
+        var targetOsc = oscs[oscName];
+        if (targetOsc) {
+            targetOsc.disconnect();
+        }
+    };
+
+    ext.stopOscillator = function (oscName) {
+        var targetOsc = oscs[oscName];
+        if (targetOsc) {
+            targetOsc.stop();
+            oscs[oscName] = null;
+        }
+    };
+
 
     // Cleanup function when the extension is unloaded
     ext._shutdown = function () {
@@ -202,7 +231,7 @@
     };
 
     ext.setOscillatorFeedback = function (oscName, value) {
-        getOscillator(oscName).setFeedback(value);
+        getOscillator(oscName).setFeedback(Math.min(Math.max(value, 0.0), 1.0));
     };
 
     ext.getOscillatorCutoff = function (oscName) {
@@ -213,29 +242,29 @@
         getOscillator(oscName).setCutoff(value);
     };
 
-    ext.playOscillator = function (oscName) {
-        getOscillator(oscName).play();
+    ext.oscillatorOn = function (oscName) {
+        getOscillator(oscName).on();
     };
 
-    ext.muteOscillator = function (oscName) {
+    ext.oscillatorOff = function (oscName) {
         var targetOsc = oscs[oscName];
         if (targetOsc) {
-            targetOsc.mute();
+            targetOsc.off();
         }
     };
 
-    ext.oscillatorIsPlaying = function (oscName) {
+    ext.oscillatorIsOn = function (oscName) {
         var targetOsc = oscs[oscName];
         if (targetOsc) {
-            return targetOsc.isPlaying;
+            return targetOsc.isOn;
         } else {
             return false;
         }
     };
 
-    ext.muteAllOscillators = function () {
+    ext.allOscillatorsOff = function () {
         for (var i = 0; i < oscNames.length; i++) {
-            ext.muteOscillator(oscNames[i]);
+            ext.oscillatorOff(oscNames[i]);
         }
     };
 
@@ -243,22 +272,22 @@
     var descriptor = {
         blocks: [
             // Block type, block name, function name
-            [' ', 'play oscillator %m.oscName', 'playOscillator', oscNames[0]],
-            [' ', 'mute oscillator %m.oscName', 'muteOscillator', oscNames[0]],
-            [' ', 'mute all oscillators', 'muteAllOscillators'],
-            ['b', 'oscillator %m.oscName is playing', 'oscillatorIsPlaying', oscNames[0]],
+            [' ', 'oscillator %m.oscName ON', 'oscillatorOn', oscNames[0]],
+            [' ', 'oscillator %m.oscName OFF', 'oscillatorOff', oscNames[0]],
+            [' ', 'all oscillators OFF', 'allOscillatorsOff'],
+            ['b', 'oscillator %m.oscName is ON', 'oscillatorIsOn', oscNames[0]],
             [' ', 'set oscillator %m.oscName type %m.oscType', 'setOscillatorType', oscNames[0], 'sine'],
             [' ', 'set oscillator %m.oscName frequency %n', 'setOscillatorFrequency', oscNames[0], 440],
             [' ', 'set oscillator %m.oscName gain %n', 'setOscillatorGain', oscNames[0], 0.5],
-            [' ', 'set oscillator %m.oscName delay %n', 'setOscillatorDelay', oscNames[0], 0.5],
-            [' ', 'set oscillator %m.oscName feedback %n', 'setOscillatorFeedback', oscNames[0], 0.5],
-            [' ', 'set oscillator %m.oscName cutoff %n', 'setOscillatorCutoff', oscNames[0], 0.5],
+            [' ', 'set oscillator %m.oscName delay %n', 'setOscillatorDelay', oscNames[0], 0],
+            [' ', 'set oscillator %m.oscName feedback %n', 'setOscillatorFeedback', oscNames[0], 0],
+            [' ', 'set oscillator %m.oscName cutoff %n', 'setOscillatorCutoff', oscNames[0], 2000],
             ['r', 'oscillator %m.oscName frequency', 'getOscillatorFrequency', oscNames[0]],
             ['r', 'oscillator %m.oscName type', 'getOscillatorType', oscNames[0]],
             ['r', 'oscillator %m.oscName gain', 'getOscillatorGain', oscNames[0]],
-            ['r', 'oscillator %m.oscName delay', 'getOscillatorGain', oscNames[0]],
-            ['r', 'oscillator %m.oscName feedback', 'getOscillatorGain', oscNames[0]],
-            ['r', 'oscillator %m.oscName cutoff', 'getOscillatorGain', oscNames[0]]
+            ['r', 'oscillator %m.oscName delay', 'getOscillatorDelay', oscNames[0]],
+            ['r', 'oscillator %m.oscName feedback', 'getOscillatorFeedback', oscNames[0]],
+            ['r', 'oscillator %m.oscName cutoff', 'getOscillatorCutoff', oscNames[0]]
         ],
         menus: {
             oscName: oscNames,
